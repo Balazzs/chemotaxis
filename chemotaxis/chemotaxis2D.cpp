@@ -100,11 +100,6 @@ Vector get_derivs (const Vector& conc)
 
 	const double L = getLigandConcentration (conc);
 
-	//static int step = 0;
-	//step++;
-	//if (mode == SimulationMode::Map && step%10000 == 0)
-	//	std::cout << conc[X] << " " << conc[Y] << " " << L << std::endl;
-
 	const double E2O__R = conc[E2O] * conc[R];
 	const double E1U__R = conc[E1U] * conc[R];
 	const double E2U__B = conc[E2U] * conc[B];
@@ -378,8 +373,6 @@ double calculateRunTime (const Vector& x, double t_tumble)
 
 	const double f = 2 * A_2_5 / (B_2_5 + A_2_5);
 
-	std::cout << "f " << f << " t_r " << 1000. / f - t_tumble << std::endl;
-
 	return 1000. / f - t_tumble;
 }
 
@@ -403,12 +396,18 @@ void makeSimple2D (double time, double t_tumble, double v_tumble, double dt_tumb
 	
 	mode = SimulationMode::Map;
 
+	int steps = 0;
+	std::cout << "2D simulating..." << std::endl;
+
 	while (x[T] < time) {
 		doTumbling (x, t_tumble, v_tumble, dt_tumble, data);
 		resizeV (x, v_tumble, v_run);
 		const double t_run = calculateRunTime (x, t_tumble);
 		doRun (x, t_run, data);
-		std::cout << getConcentrationAtPoint (x[X], x[Y]) << std::endl;
+		
+		std::cout << "time: " << x[T] << " / " << time << std::endl;
+		std::cout << "concentration: " << getConcentrationAtPoint (x[X], x[Y]) << std::endl;
+		std::cout << "last run time: " << t_run << std::endl;
 	}
 
 	writeDataToFile ("2D.dat", data);
